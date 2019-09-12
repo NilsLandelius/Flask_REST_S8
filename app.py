@@ -5,6 +5,7 @@ from resources.item import Item, ItemList
 from security import authenticate, identity
 from resources.user import UserRegister
 from resources.store import Store, StoreList
+from db import db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///data.db'
@@ -24,8 +25,7 @@ api.add_resource(ItemList,'/items')
 api.add_resource(Item,'/item/<string:name>')
 api.add_resource(UserRegister,'/register')
 
-#from db import db
-#db.init_app(app)
+db.init_app(app)
 
 if __name__ == '__main__':
     from db import db
