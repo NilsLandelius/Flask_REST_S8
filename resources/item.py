@@ -6,7 +6,7 @@ from models.item import ItemModel
 
 class ItemList(Resource):
     def get(self):       
-        return {'items':[item.json() for item in ItemModel.query.all()]} 
+        return {'items':[item.json() for item in ItemModel.find_all()]} 
 
 class Item(Resource):
         parser = reqparse.RequestParser()
