@@ -20,7 +20,7 @@ class StoreModel(db.Model):
         return cls.query.filter_by(name=name).first()
     
     @classmethod
-        def find_all(cls):
+    def find_all(cls):
             return cls.query.all()
             
     
