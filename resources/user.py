@@ -1,4 +1,6 @@
 import sqlite3
+from werkzeug.security import safe_str_cmp
+from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_restful import Resource, reqparse
 from models.user import UserModel
 
@@ -37,3 +39,23 @@ class User(Resource):
             return {'message': 'User not found'}, 404
         user.delete_from_db()
         return {'message':'User was deleted'}
+
+class UserLogin(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('username',required=True, type=str, help="This field cannot be blank")
+    parser.add_argument('password',type=str,default='password')
+
+    @classmethod
+    def post(cls):
+        data = cls.parser.parse_args()
+        user = UserModel.find_by_username(data['username'])
+
+        if user and safe_str_cmp(user.password, data['password']):
+            access_token = create_access_token(identity=user.id, fresh=True)
+            refresh_token = create_refresh_token(identity=user.id)
+            return {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }, 200
+        
+        return {'message':'Invalid credentials'}, 401
