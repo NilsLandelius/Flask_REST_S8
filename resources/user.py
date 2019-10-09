@@ -1,6 +1,6 @@
 import sqlite3
 from werkzeug.security import safe_str_cmp
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_claims, jwt_required
 from flask_restful import Resource, reqparse
 from models.user import UserModel
 
@@ -32,8 +32,13 @@ class User(Resource):
             return {'message': 'User not found'}, 404
         return user.json()
 
+    
     @classmethod
+    @jwt_required
     def delete(cls,user_id):
+        claims = get_jwt_claims()
+        if not claims['is_admin']:
+            return {'message':'You don\'t have admin privileges'}, 401
         user = UserModel.find_by_id(user_id)
         if not user:
             return {'message': 'User not found'}, 404

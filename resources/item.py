@@ -1,6 +1,6 @@
 from flask import request
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_claims
 from models.item import ItemModel
 
 
@@ -10,7 +10,7 @@ class ItemList(Resource):
 
 class Item(Resource):
         parser = reqparse.RequestParser()
-        @jwt_required()
+        @jwt_required
         def get(self,name):
             item = ItemModel.find_by_name(name)
             if item:
@@ -32,8 +32,11 @@ class Item(Resource):
                 return {'message': 'An error occured inserting the item'}, 500
             
             return item.json(), 201
-        
+        @jwt_required
         def delete(self, name):
+            claims = get_jwt_claims()
+            if not claims['is_admin']:
+                return {'message':'You don\'t have authorization to delete an item'}, 401
             item = ItemModel.find_by_name(name)
             if item:
                 item.delete_from_db()

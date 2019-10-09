@@ -16,6 +16,12 @@ api = Api(app)
 
 jwt = JWTManager(app)
 
+@jwt.user_claims_loader
+def add_claims_to_jwt(identity):
+    if identity == 1: #This needs to be changed from hard-coded to a DB check or config-file
+        return {'is_admin': True}
+    return {'is_admin': False}
+
 api.add_resource(Store,'/api/store/<string:name>')
 api.add_resource(StoreList,'/api/stores')
 api.add_resource(ItemList,'/api/items')
