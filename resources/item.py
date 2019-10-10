@@ -1,6 +1,12 @@
 from flask import request
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required, get_jwt_claims, jwt_optional, get_jwt_identity
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_claims,
+    jwt_optional,
+    get_jwt_identity,
+    fresh_jwt_required
+    )
 from models.item import ItemModel
 
 
@@ -24,6 +30,7 @@ class Item(Resource):
                 return item.json()
             return {'message': 'The item does not exist'}, 404
 
+        @fresh_jwt_required
         def post(self,name):
             self.parser.add_argument('price', type=float,default=0.0)
             self.parser.add_argument('store_id',type=int,required=True,help='Every item need a store id')
