@@ -4,7 +4,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from resources.item import Item, ItemList
-from resources.user import UserRegister, User, UserLogin, TokenRefresh
+from resources.user import UserRegister, User, UserLogin, TokenRefresh, UserLogout
 from resources.store import Store, StoreList
 from blacklist import BLACKLIST
 
@@ -27,7 +27,7 @@ def add_claims_to_jwt(identity):
 
 @jwt.token_in_blacklist_loader
 def check_if_in_blacklist(decrypted_token):
-    return decrypted_token['identity'] in BLACKLIST
+    return decrypted_token['jti'] in BLACKLIST
 
 
 api.add_resource(Store,'/api/store/<string:name>')
@@ -38,6 +38,7 @@ api.add_resource(UserRegister,'/api/register')
 api.add_resource(User,'/api/user/<int:user_id>')
 api.add_resource(UserLogin,'/api/auth' )
 api.add_resource(TokenRefresh,'/api/refresh')
+api.add_resource(UserLogout,'/api/logout')
 
 if __name__ == '__main__':
     from db import db

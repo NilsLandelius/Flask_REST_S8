@@ -1,4 +1,5 @@
 import sqlite3
+from blacklist import BLACKLIST
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
     create_access_token,
@@ -6,7 +7,8 @@ from flask_jwt_extended import (
     get_jwt_claims,
     jwt_required,
     jwt_refresh_token_required,
-    get_jwt_identity
+    get_jwt_identity,
+    get_raw_jwt
     )
 from flask_restful import Resource, reqparse
 from models.user import UserModel
@@ -71,6 +73,13 @@ class UserLogin(Resource):
             }, 200
         
         return {'message':'Invalid credentials'}, 401
+
+class UserLogout(Resource):
+    @jwt_required
+    def post(self):
+        jti = get_raw_jwt()['jti'] # JTI is the JWT ID, a unique identifier for a JWT
+        BLACKLIST.add(jti)
+        return {'message':'You are logged out'}, 200
 
 class TokenRefresh(Resource):
     @jwt_refresh_token_required

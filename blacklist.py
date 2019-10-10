@@ -1,1 +1,1 @@
-BLACKLIST = {4,5}
+BLACKLIST = set()
